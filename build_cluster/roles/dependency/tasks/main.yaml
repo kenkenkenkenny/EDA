@@ -1,0 +1,13 @@
+- name: Download python dependencies
+  become: true
+  ansible.builtin.pip:
+    name: 
+      - biopython
+      - torch
+      - numpy
+      - scipy
+      - Bio
+      - celery
+    executable: /usr/bin/pip3.12
+
+    

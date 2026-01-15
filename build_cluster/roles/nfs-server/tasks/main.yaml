@@ -1,0 +1,29 @@
+- name: Install NFS server package
+  become: true
+  ansible.builtin.dnf:
+    name: nfs-utils
+    state: present
+- name: Enable NFS server service
+  become: true
+  ansible.builtin.service:
+    name: nfs-server
+    enabled: true
+    state: started 
+- name: Make directory to export
+  become: true
+  ansible.builtin.file:
+    path: /home/almalinux/results/
+    state: directory
+    mode: "2775"
+- name: Create exports file
+  become: true
+  ansible.builtin.template:
+    src: files/exports.j2
+    dest: /etc/exports
+    mode: "0644"
+- name: Run exportfs
+  become: true
+  ansible.builtin.shell: exportfs -a
+
+
+    

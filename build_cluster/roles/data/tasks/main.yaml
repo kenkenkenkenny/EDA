@@ -1,0 +1,56 @@
+- name: Create directory for HH-suite databases
+  become: true
+  ansible.builtin.file: 
+    path: /home/almalinux/data/pdb70
+    state: directory
+    owner: almalinux
+    group: almalinux
+    mode: "0755"
+
+
+
+
+- name: Download pdb70 database
+  become: true
+  ansible.builtin.get_url:
+    url: https://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/pdb70_from_mmcif_latest.tar.gz
+    dest: /home/almalinux/data/pdb70/pdb70_from_mmcif_latest.tar.gz
+
+
+# - name: Extract pdb70 database
+#   become: true
+#   ansible.builtin.unarchive:
+#     src: /home/almalinux/data/pdb70/pdb70_from_mmcif_latest.tar.gz
+#     dest: /home/almalinux/data/pdb70/
+#     remote_src: yes
+
+
+- name: Create directory for uniprot databases
+  become: true
+  ansible.builtin.file:
+    path: /home/almalinux/data/uniprot
+    state: directory
+    mode: "0755"
+
+
+- name: Download uniprot database
+  become: true
+  ansible.builtin.get_url:
+    url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/reference_proteomes/Eukaryota/UP000000589/UP000000589_10090.fasta.gz
+    dest: /home/almalinux/data/uniprot/UP000000589_10090.fasta.gz
+
+- name: Extract uniprot database
+  become: true
+  ansible.builtin.shell: |
+    gunzip -c /home/almalinux/data/uniprot/UP000000589_10090.fasta.gz \
+      > /home/almalinux/data/uniprot/UP000000589_10090.fasta
+  args:
+    creates: /home/almalinux/data/uniprot/UP000000589_10090.fasta
+
+- name: Change permissions for pdb70 database
+  become: true
+  ansible.builtin.file:
+    path: /home/almalinux/data/pdb70
+    recurse: true
+    mode: "u=rwX,go=rX"
+    

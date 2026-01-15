@@ -1,0 +1,33 @@
+- name: Create hhsuite directory
+  become: true
+  ansible.builtin.file:
+    path: /home/almalinux/hhsuite
+    state: directory
+    mode: "0755"
+
+- name: Download HH-suite
+  become: true
+  ansible.builtin.get_url: 
+    url: https://github.com/soedinglab/hh-suite/releases/download/v3.3.0/hhsuite-3.3.0-AVX2-Linux.tar.gz
+    dest: /home/almalinux/hhsuite/hhsuite-3.3.0-AVX2-Linux.tar.gz
+    
+    #  tar xvfz hhsuite-3.3.0-AVX2-Linux.tar.gz
+    #   export PATH="$(pwd)/bin:$(pwd)/scripts:$PATH"
+    
+
+- name: Extract HH-suite
+  become: true
+  ansible.builtin.unarchive:
+    src: /home/almalinux/hhsuite/hhsuite-3.3.0-AVX2-Linux.tar.gz
+    dest: /home/almalinux/hhsuite/
+    remote_src: yes
+
+- name: Add HH-suite to PATH
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/profile.d/hhsuite.sh
+    mode: "0644"
+    content: |
+      # HH-suite
+      export HHSUITE_HOME=/home/almalinux/hhsuite/hhsuite-3.3.0-AVX2-Linux
+      export PATH="$HHSUITE_HOME/bin:$HHSUITE_HOME/scripts:$PATH"

@@ -1,0 +1,21 @@
+---
+- hosts: host
+  roles:
+    - rabbitmq
+    - dispatcher
+    - nfs-server
+
+- hosts: workers
+  roles:
+    - git
+    - python312
+    - dependency
+    - data
+    - s4pred
+    - hhsuite
+    - script
+    - celery
+    - nfs-client
+
+
+    

@@ -1,0 +1,25 @@
+
+- name: Install NFS client package
+  become: true
+  ansible.builtin.dnf:
+    name: nfs-utils
+    state: present
+
+- name: Ensure mount point exists
+  become: true
+  ansible.builtin.file:
+    path: /home/almalinux/results
+    state: directory
+    owner: almalinux
+    group: almalinux
+    mode: "0775"
+
+- name: Mount NFS share (persist across reboot)
+  become: true
+  ansible.posix.mount:
+    src: "{{ hostvars[groups['host'][0]].ansible_host | default(groups['host'][0]) }}:/home/almalinux/results"
+    path: /home/almalinux/results
+    fstype: nfs
+    opts: defaults,_netdev
+    state: mounted
+    boot: true

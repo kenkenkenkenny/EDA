@@ -1,0 +1,26 @@
+- name: Create s4pred directory
+  become: true
+  ansible.builtin.file:
+    path: /home/almalinux/s4pred
+    state: directory
+    mode: "0755"
+    
+- name: Clone s4pred repository
+  become: true
+  ansible.builtin.git:
+    repo: https://github.com/psipred/s4pred.git
+    dest: /home/almalinux/s4pred
+
+
+- name: Download s4pred weights
+  become: true
+  ansible.builtin.get_url:
+    url: http://bioinfadmin.cs.ucl.ac.uk/downloads/s4pred/weights.tar.gz
+    dest: /home/almalinux/s4pred/weights.tar.gz
+
+- name: Extract s4pred weights
+  become: true
+  ansible.builtin.unarchive:
+    src: /home/almalinux/s4pred/weights.tar.gz
+    dest: /home/almalinux/s4pred/
+    remote_src: yes

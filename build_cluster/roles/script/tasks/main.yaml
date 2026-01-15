@@ -1,0 +1,35 @@
+- name: Create script directory
+  become: true
+  ansible.builtin.file:
+    path: /home/almalinux/scripts
+    state: directory  
+    mode: "0777"
+
+
+- name: Copy pipline_script.py 
+  become: true
+  become_user: root
+  ansible.builtin.copy:
+    src: pipeline_script.py
+    dest: /home/almalinux/scripts/pipeline_script.py
+
+- name: Copy results_parser.py
+  become: true
+  become_user: root
+  ansible.builtin.copy:
+    src: results_parser.py
+    dest: /home/almalinux/scripts/results_parser.py
+
+- name: Copy test.fa
+  become: true
+  become_user: root
+  ansible.builtin.copy:
+    src: test.fa
+    dest: /home/almalinux/scripts/test.fa
+
+- name: Copy tasks.py
+  become: true
+  become_user: root
+  ansible.builtin.copy:
+    src: tasks.py
+    dest: /home/almalinux/scripts/tasks.py

@@ -1,0 +1,53 @@
+- name: Create script directory
+  become: true
+  ansible.builtin.file:
+    path: /home/almalinux/scripts
+    state: directory  
+    mode: "0777"
+
+- name: Install Python 3.12
+  ansible.builtin.dnf:
+    name:
+      - python3.12
+      - python3.12-devel
+      - python3.12-pip
+      - python3.12-wheel
+    state: latest
+  become: true
+  become_user: root
+
+
+- name: Download celery
+  become: true
+  ansible.builtin.pip:
+    name: 
+      - celery
+    executable: /usr/bin/pip3.12
+
+
+- name: Copy dispatcher.py
+  become: true
+  become_user: root
+  ansible.builtin.copy:
+    src: dispatcher.py
+    dest: /home/almalinux/scripts/dispatcher.py
+
+
+- name: Copy experiment_ids.txt
+  become: true
+  become_user: root
+  ansible.builtin.copy:
+    src: experiment_ids.txt
+    dest: /home/almalinux/scripts/experiment_ids.txt
+
+
+
+- name: Run dispatcher.py
+  ansible.builtin.command:
+    cmd: /usr/bin/python3.12 dispatcher.py
+    chdir: /home/almalinux/scripts
+  register: dispatcher_out
+
+- name: Show dispatcher output
+  ansible.builtin.debug:
+    var: dispatcher_out.stdout_lines

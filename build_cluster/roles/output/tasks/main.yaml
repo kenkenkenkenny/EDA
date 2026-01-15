@@ -1,0 +1,6 @@
+- name: Copy output.py
+  become: true
+  become_user: root
+  ansible.builtin.copy:
+    src: output.py
+    dest: /home/almalinux/scripts/output.py

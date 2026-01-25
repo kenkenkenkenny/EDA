@@ -17,12 +17,13 @@
     dest: /home/almalinux/data/pdb70/pdb70_from_mmcif_latest.tar.gz
 
 
-# - name: Extract pdb70 database
-#   become: true
-#   ansible.builtin.unarchive:
-#     src: /home/almalinux/data/pdb70/pdb70_from_mmcif_latest.tar.gz
-#     dest: /home/almalinux/data/pdb70/
-#     remote_src: yes
+- name: Extract pdb70 database
+  become: true
+  ansible.builtin.unarchive:
+    src: /home/almalinux/data/pdb70/pdb70_from_mmcif_latest.tar.gz
+    dest: /home/almalinux/data/pdb70/
+    remote_src: yes
+    # creates: /home/almalinux/data/pdb70/pdb70_a3m.ffdata
 
 
 - name: Create directory for uniprot databases

@@ -4,3 +4,10 @@
   ansible.builtin.copy:
     src: output.py
     dest: /home/almalinux/scripts/output.py
+
+- name: Run output aggregation script
+  become: true
+  become_user: almalinux
+  ansible.builtin.command:
+    cmd: python3.12 /home/almalinux/scripts/output.py
+    chdir: /home/almalinux/scripts 

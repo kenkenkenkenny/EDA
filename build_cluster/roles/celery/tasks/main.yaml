@@ -1,4 +1,12 @@
 ---
+
+- name: Stop existing Celery service if running
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ celery_service_name | default('celery-pipeline') }}"
+    state: stopped
+  ignore_errors: true
+
 - name: Ensure celery log file exists
   become: true
   ansible.builtin.file:
@@ -33,10 +41,10 @@
 
       ExecStart={{ celery_bin_path | default('/usr/bin/python3.12') }} -m celery -A tasks worker \
         -Q {{ celery_queue_name | default('pipeline') }} \
-        --concurrency={{ celery_concurrency | default(3) }} \
+        --concurrency={{ celery_concurrency | default(4) }} \
         --prefetch-multiplier=1 \
         --loglevel=INFO \
-        -n {{ celery_node_name | default('worker3@%h') }}
+        -n {{ celery_node_name | default('worker@%h') }}
 
       Restart=always
       RestartSec=5
@@ -53,30 +61,19 @@
   become: true
   ansible.builtin.systemd:
     daemon_reload: true
-  when: service_file.changed
 
-
-- name: Ensure Celery service is enabled and restarted
+- name: Enable and restart Celery service
   become: true
   ansible.builtin.systemd:
     name: "{{ celery_service_name | default('celery-pipeline') }}"
     enabled: true
     state: restarted
-  when: service_file.changed
-
-
-- name: Ensure Celery service is started
-  become: true
-  ansible.builtin.systemd:
-    name: "{{ celery_service_name | default('celery-pipeline') }}"
-    state: started
-  when: not service_file.changed
-
 
 - name: Verify celery service status
+  become: true
   ansible.builtin.command: "systemctl is-active {{ celery_service_name | default('celery-pipeline') }}"
   register: service_active
   changed_when: false
-  retries: 5
+  retries: 10
   delay: 2
   until: service_active.rc == 0

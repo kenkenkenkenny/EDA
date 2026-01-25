@@ -1,11 +1,14 @@
 ---
 - hosts: host
+  become: true
   roles:
     - rabbitmq
     - dispatcher
     - nfs-server
+    - monitor_server
 
 - hosts: workers
+  become: true
   roles:
     - git
     - python312
@@ -16,6 +19,7 @@
     - script
     - celery
     - nfs-client
+    - monitor_client
 
 
     

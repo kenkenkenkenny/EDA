@@ -1,6 +1,6 @@
 from celery import Celery
 
-BROKER = "amqp://admin:abc123@10.134.12.96:5672//"
+BROKER = "amqp://admin:abc123@10.134.12.194:5672//"
 BACKEND = "rpc://"
 TASK = "pipeline.run_by_id"
 QUEUE = "pipeline"

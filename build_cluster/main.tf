@@ -75,6 +75,19 @@ resource "harvester_virtualmachine" "host" {
     update = "20m"
     delete = "20m"
   }
+  tags = {
+    condenser_ingress_isAllowed = true
+    condenser_ingress_isEnabled = true
+    condenser_ingress_prometheus_hostname = "lkj-prometheus"
+    condenser_ingress_prometheus_port = 9090
+    condenser_ingress_nodeexporter_hostname = "lkj-nodeexporter"
+    condenser_ingress_nodeexporter_port = 9100
+    condenser_ingress_grafana_hostname = "lkj-grafana"
+    condenser_ingress_grafana_port = 3000
+    condenser_ingress_rabbit_port = 15672
+    condenser_ingress_rabbit_hostname = "lkj-rabbit"
+
+  }
 }
 
 resource "harvester_virtualmachine" "worker" {
@@ -123,5 +136,11 @@ resource "harvester_virtualmachine" "worker" {
     create = "20m"
     update = "20m"
     delete = "20m"
+  }
+  tags = {
+    condenser_ingress_isAllowed = true
+    condenser_ingress_isEnabled = true
+    condenser_ingress_node_hostname = "lkj-node"
+    condenser_ingress_node_port  = 9100
   }
 }

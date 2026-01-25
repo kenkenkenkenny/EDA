@@ -1,0 +1,28 @@
+- name: Install epel
+  become: true
+  ansible.builtin.dnf:
+    name: epel-release
+    state: latest
+
+- name: Install node-exporter
+  become: true
+  ansible.builtin.dnf:
+    name: golang-github-prometheus-node-exporter
+    state: latest
+
+- name: move service file
+  ansible.builtin.copy:
+    src: node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+    owner: root
+    group: root
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable and start node_exporter
+  ansible.builtin.service:
+    name: node_exporter
+    state: started
+    enabled: true

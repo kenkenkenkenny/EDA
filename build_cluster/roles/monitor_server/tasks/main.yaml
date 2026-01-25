@@ -1,0 +1,103 @@
+- name: Install monitoring tools
+  become: true
+  ansible.builtin.dnf:
+    name:
+      - golang
+      - epel-release
+      - golang-github-prometheus-node-exporter
+      - golang-github-prometheus
+      - grafana
+    state: present
+
+- name: Create custom metrics directory for textfile collector
+  become: true
+  ansible.builtin.file:
+    path: /home/almalinux/custom_metrics
+    state: directory
+    owner: almalinux
+    group: almalinux
+    mode: '0755'
+
+- name: Install node_exporter systemd service
+  become: true
+  ansible.builtin.copy:
+    src: node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Ensure /etc/prometheus exists
+  become: true
+  ansible.builtin.file:
+    path: /etc/prometheus
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Deploy prometheus.yml
+  become: true
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install Prometheus systemd service
+  become: true
+  ansible.builtin.copy:
+    src: prometheus.service
+    dest: /etc/systemd/system/prometheus.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Reload systemd
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable and start node_exporter
+  become: true
+  ansible.builtin.service:
+    name: node_exporter
+    state: started
+    enabled: true
+
+- name: Enable RabbitMQ Prometheus plugin
+  become: true
+  ansible.builtin.command: rabbitmq-plugins enable rabbitmq_prometheus
+  register: rabbitmq_prometheus_enable
+  changed_when: rabbitmq_prometheus_enable.rc == 0
+  failed_when: rabbitmq_prometheus_enable.rc != 0
+
+- name: Restart RabbitMQ server
+  become: true
+  ansible.builtin.service:
+    name: rabbitmq-server
+    state: restarted
+
+- name: Verify RabbitMQ Prometheus metrics endpoint is reachable
+  become: true
+  ansible.builtin.command: curl -s -o /dev/null -w "%{http_code}\n" http://localhost:15692/metrics
+  register: rabbitmq_metrics_http
+  changed_when: false
+  failed_when: rabbitmq_metrics_http.stdout.strip() != "200"
+
+- name: Enable and start Prometheus
+  become: true
+  ansible.builtin.service:
+    name: prometheus
+    state: started
+    enabled: true
+
+- name: Enable and start Grafana
+  become: true
+  ansible.builtin.service:
+    name: grafana-server
+    state: started
+    enabled: true
+
+

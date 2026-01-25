@@ -1,0 +1,14 @@
+[Unit]
+Description=Prometheus Node Exporter
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/bin/node_exporter --collector.textfile.directory=/home/almalinux/custom_metrics
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

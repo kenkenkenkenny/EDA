@@ -6,7 +6,7 @@ import subprocess
 
 app = Celery(
     "worker",
-    broker="amqp://admin:abc123@10.134.12.96:5672//",
+    broker="amqp://admin:abc123@10.134.12.194:5672//",
     backend="rpc://",
 )
 
@@ -65,3 +65,4 @@ def run_pipeline(self, protein_id: str):
     shutil.copy2(str(out_file), str(final))
 
     return {"protein_id": protein_id, "result": str(final), "workdir": str(workdir)}
+

@@ -1,0 +1,38 @@
+---
+- name: Reset worker state (stop celery)
+  hosts: workers
+  become: true
+  vars:
+    celery_service_name: celery-pipeline
+  tasks:
+    - name: Stop celery service
+      ansible.builtin.systemd:
+        name: "{{ celery_service_name }}"
+        state: stopped
+        enabled: false
+      ignore_errors: true
+
+
+- name: Clean RabbitMQ queues
+  hosts: host
+  become: true
+  vars:
+    rabbitmq_vhost: /
+  tasks:
+    - name: Ensure rabbitmqctl works
+      ansible.builtin.command: rabbitmqctl status
+      changed_when: false
+
+    - name: List all queues in vhost (no header)
+      ansible.builtin.command: >
+        rabbitmqctl list_queues -p {{ rabbitmq_vhost }} name --formatter=plain
+      register: rabbitmq_queues
+      changed_when: false
+
+    - name: Purge all RabbitMQ queues
+      ansible.builtin.command: >
+        rabbitmqctl purge_queue -p {{ rabbitmq_vhost }} {{ item }}
+      loop: "{{ rabbitmq_queues.stdout_lines }}"
+      when:
+        - rabbitmq_queues.stdout_lines | length > 0
+        - item | length > 0

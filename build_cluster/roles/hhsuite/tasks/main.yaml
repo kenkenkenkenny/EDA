@@ -21,6 +21,7 @@
     src: /home/almalinux/hhsuite/hhsuite-3.3.0-AVX2-Linux.tar.gz
     dest: /home/almalinux/hhsuite/
     remote_src: yes
+    # creates: /home/almalinux/hhsuite/bin/hhsearch
 
 - name: Add HH-suite to PATH
   become: true

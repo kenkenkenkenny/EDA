@@ -1,0 +1,61 @@
+
+- name: Install MySQL server
+  become: true
+  ansible.builtin.dnf:
+    name: mysql-server
+    state: present
+
+- name: Enable and start MySQL
+  become: true
+  ansible.builtin.service:
+    name: mysqld
+    state: started
+    enabled: true
+
+- name: Wait for MySQL
+  become: true
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 3306
+    timeout: 60
+
+- name: Install PyMySQL for python3.12
+  become: true
+  ansible.builtin.pip:
+    name: 
+     - pymysql
+     - cryptography
+    executable: pip3.12
+
+- name: Drop MySQL results table
+  become: true
+  ansible.builtin.command:
+    cmd: mysql -uroot -e "DROP TABLE IF EXISTS pipeline.results;"
+  changed_when: true
+
+- name: Copy results_to_mysql.py script
+  become: true
+  ansible.builtin.copy:
+    src: results_to_mysql.py
+    dest: /home/almalinux/scripts/results_to_mysql.py
+    mode: "0755"
+
+
+- name: Run results_to_mysql.py script
+  become: true
+  ansible.builtin.command:
+    cmd: python3.12 /home/almalinux/scripts/results_to_mysql.py
+  register: import_run
+  failed_when: import_run.rc != 0
+
+
+- name: Check MySQL results table row count
+  become: true
+  ansible.builtin.command:
+    cmd: mysql -uroot -e "SELECT COUNT(*) FROM pipeline.results;"
+  register: mysql_count
+  changed_when: false
+
+- name: Show MySQL row count
+  ansible.builtin.debug:
+    var: mysql_count.stdout

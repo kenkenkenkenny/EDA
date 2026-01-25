@@ -2,14 +2,17 @@
 - hosts: host
   become: true
   roles:
+    - key
     - rabbitmq
     - dispatcher
     - nfs-server
     - monitor_server
 
+
 - hosts: workers
   become: true
   roles:
+    - key
     - git
     - python312
     - dependency

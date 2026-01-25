@@ -9,6 +9,7 @@
       - Bio
       - celery
       - prometheus_client
+      - pymysql
     executable: /usr/bin/pip3.12
 
     

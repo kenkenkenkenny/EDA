@@ -6,7 +6,7 @@ import subprocess
 
 app = Celery(
     "worker",
-    broker="amqp://admin:abc123@10.134.12.194:5672//",
+    broker="amqp://admin:abc123@10.134.12.238:5672//",
     backend="rpc://",
 )
 

@@ -1,0 +1,11 @@
+- name: Add lecturer SSH key
+  authorized_key:
+    user: almalinux
+    key: "{{ lookup('file', 'files/lecturer_key.pub') }}"
+    state: present
+
+- name: Add host SSH key
+  authorized_key:
+    user: almalinux
+    key: "{{ lookup('file', 'files/host.pub') }}"
+    state: present
